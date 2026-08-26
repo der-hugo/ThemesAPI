@@ -13,6 +13,7 @@ This page documents the [`ThemeDatabase`](ScriptingAPI.md#themedatabase-runtime-
 - [Editor Entry Points](#editor-entry-points)
 - [Inspector Workflow](#inspector-workflow)
 - [Value Definition Workflow](#value-definition-workflow)
+- [Favorite (Default) Value per Type](#favorite-default-value-per-type)
 - [Constant and Theme-Specific Conversion](#constant-and-theme-specific-conversion)
 - [Theme Workflow](#theme-workflow)
 - [JSON Format and Import/Export](#json-format-and-importexport)
@@ -25,7 +26,7 @@ This page documents the [`ThemeDatabase`](ScriptingAPI.md#themedatabase-runtime-
 
 [`ThemeDatabase`](ScriptingAPI.md#themedatabase-runtime-api) stores:
 
-- `ValueDefinitions`: schema entries (GUID, display name, value type, constant flag)
+- `ValueDefinitions`: schema entries (GUID, display name, value type, constant flag, favorite flag)
 - `ConstantValues`: implementations for definitions marked constant
 - `Themes`: named theme entries with per-theme values for non-constant definitions
 - `ActiveThemeGuid`: active theme identifier
@@ -143,6 +144,19 @@ The value type controls which bindings can consume the definition:
 
 Name definitions by intent rather than by one theme's implementation. For example, prefer `Primary Color`, `Dialog Background`, or `Button Fade Duration` over `Blue`, `Dark Gray`, or `0.2`. Bindings store the definition GUID, so the display name can be refined later without losing references.
 
+## Favorite (Default) Value per Type
+
+When the database holds several values of the **same type** (for example three different `Float` values), you can mark one of them as the **favorite** - the preferred default for that type. A freshly created [`ThemeValue<T>`](ScriptingAPI.md#themevalue-and-value-types) of that type then auto-selects the favorite instead of `<None>`, so new bindings start from a sensible value without a manual pick.
+
+- A **star toggle** sits between the value's **type dropdown** and its **value field**. Click it to set or unset the favorite.
+  - **Gold star** - this value is the current favorite for its type.
+  - **Muted star** - this value is not the favorite.
+- The toggle is **only shown when more than one value of the type exists**. With a single value of a type, that value is already the implicit default, so no toggle is needed.
+- The favorite is **optional and exclusive per type**: several values of a type may exist with **no** favorite at all, and setting a favorite clears it from any other value of the same type (at most one favorite per type).
+- The favorite only changes the **default for newly created** references. Existing bindings keep whatever they already store; it never rewrites a value that is already selected.
+
+This mirrors the binding-side [Auto-selection](Bind.md#selecting-a-value) behavior: the favorite takes precedence, and a lone value of a type is still auto-selected when no favorite is set.
+
 ## Constant and Theme-Specific Conversion
 
 Definitions can be converted both ways:
@@ -213,6 +227,7 @@ Shape:
 
 Key and serialization notes:
 
+- Each `valueDefinitions` entry carries `displayName`, `type`, and `isConstant`. The [favorite (default) value](#favorite-default-value-per-type) of a type also emits `"isFavorite": true`; the key is omitted for every non-favorite value, so exports stay clean and older importers simply ignore it.
 - Value entries in `constantValues` and `themes.*.values` are exported as `<definitionGuid> <displayName>` for hand-editing readability. Import only uses the GUID before the first space. The displayName is rather taken from the ValueDefinitions
 - Value conversion is keyed by value type. A registered [`ThemeValueJsonConverter<T>`](ScriptingAPI.md#custom-json-serialization) (custom or built-in) converts the value; otherwise Unity-like field serialization (matching `JsonUtility`'s rules) is used.
 - Built-in converters serialize plain scalars as JSON primitives, `Color` and `ColorBlock` as HEX (`#RRGGBBAA`), enums by name, and `Quaternion` as Euler-angle objects.

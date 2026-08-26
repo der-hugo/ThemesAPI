@@ -9,9 +9,9 @@ The sample demonstrates the full [`ThemeDatabase`](ScriptingAPI.md#themedatabase
 ## Contents
 
 - [Additional Dependencies](#additional-dependencies)
+- [Import the Sample](#import-the-sample)
 - [Open the Scene](#open-the-scene)
 - [Inspect the Included ThemeDatabase](#inspect-the-included-themedatabase)
-- [JSON Converter References](#json-converter-references)
 - [Play Mode Theme Switching](#play-mode-theme-switching)
 - [Live Editing and JSON Backup](#live-editing-and-json-backup)
 
@@ -24,13 +24,32 @@ In addition to the minimal core package dependencies, the included sample is als
 - Universal Render Pipeline (For the 3D cube material - alternatively simply change the Shader of the `Cube` material to e.g. `Standard`)
 - Input System (For UI interactions - alternatively add the `StandaloneInputModule` to the `EventSystem`)
 
+## Import the Sample
+
+In Package Manager:
+
+1. Select `derHugo - Themes`
+2. Import sample `Themes Example`
+
+As the sample includes its own `ThemeDatabase` instance you have to activate it.
+
+Find
+
+    Assets/Samples/derHugo - Themes/<version>/Themes Example/Runtime/Themes/SampleThemeDatabase.asset
+
+[![][3]][3]
+
+and in the Inspector click `Activate this Database`.
+
 ## Open the Scene
 
 Open:
 
-- `Assets/Samples/derHugo - Themes/<version>/Themes Example/Runtime/Scenes/ThemesExample.unity`
+    Assets/Samples/derHugo - Themes/<version>/Themes Example/Runtime/Scenes/ThemesExample.unity
 
 [![][1]][1]
+
+**Note:** The sample uses `TextMeshPro` for the UI. If right after the sample import you see `TextMeshPro` related `NullReferenceExceptions` ensure the TextMeshPro Essentials are imported. You can trigger this by simply selecting one of the according Text objects to force an Inspector initialization for them.
 
 The hierarchy includes static and interactive controls already wired with bindables and themed bindings.
 
@@ -40,7 +59,9 @@ The hierarchy includes static and interactive controls already wired with bindab
 
 Sample [`ThemeDatabase`](ScriptingAPI.md#themedatabase-runtime-api) asset:
 
-- `Assets/Samples/derHugo - Themes/<version>/Themes Example/Runtime/Themes/SampleThemeDatabase.asset`
+    Assets/Samples/derHugo - Themes/<version>/Themes Example/Runtime/Themes/SampleThemeDatabase.asset
+
+[![][3]][3]
 
 It contains:
 
@@ -49,35 +70,11 @@ It contains:
 - two themes (`Light`, `Dark`)
 - an active theme
 
-[![][3]][3]
-
 You can edit it via:
 
 - asset inspector
 - `Window > derHugo > Themes`
 - `Edit > Project Settings > derHugo > Themes`
-
-## JSON Converter References
-
-Any type the database can serialize is themeable **directly** as `ThemeValue<T>` - no per-type subclass is required. Scalar and Unity value types (`int`, `float`, `Vector2`/`Vector3`/`Vector4`, `Rect`, `Bounds`, `LayerMask`, `Gradient`, `Matrix4x4`, …) are themed simply by choosing them from the database's searchable value-type list; the field is a plain `ThemeValue<T>`.
-
-The package ships built-in `ThemeValueJsonConverter<T>` implementations for common Unity value types under:
-
-- `Packages/com.derhugo.themes/Runtime/Json/BuiltIn Converters`
-
-These give readable, stable JSON instead of Unity's default field names, and — like any converter — apply recursively when the type is nested inside another value:
-
-- `ColorThemeValueJsonConverter`: exports a `#RRGGBBAA` HEX string.
-- `Vector2/Vector3/Vector4ThemeValueJsonConverter` (and the `*Int` variants): export `{x, y, …}`.
-- `QuaternionThemeValueJsonConverter`: exports its Euler angles `{x, y, z}`.
-- `RectThemeValueJsonConverter`: exports `x`, `y`, `width`, and `height`.
-- `BoundsThemeValueJsonConverter`: exports `center` and `extend`.
-- `BoundsIntThemeValueJsonConverter`: exports `position` and `size`.
-- `LayerMaskThemeValueJsonConverter`: exports only `bits`.
-- `GradientThemeValueJsonConverter`: exports `mode`, `colorSpace`, `colorKeys`, and `alphaKeys`.
-- `ColorBlockThemeValueJsonConverter`: exports its five HEX colors plus `colorMultiplier` and `fadeDuration`.
-
-Use these files as copy/adapt references when you need a hand-authored JSON shape for a value type.
 
 ## Play Mode Theme Switching
 

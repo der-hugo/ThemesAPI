@@ -139,13 +139,13 @@ public enum Source
 }
 ```
 
-| Member | Description |
-| --- | --- |
-| `Mode` | `Custom` uses `CustomValue`; `Themed` resolves `DefinitionGuid` through the active database. |
-| `CustomValue` | The direct value used in `Custom` mode. |
-| `DefinitionGuid` | The `float` definition GUID resolved in `Themed` mode. |
-| `TryGetValue(out float value)` | Resolves the effective value; returns `false` when a themed value can not be resolved. |
-| `GetValueOrDefault(float fallback = 0)` | Resolves the effective value, or `fallback` when a themed value can not be resolved. |
+| Member                                  | Description                                                                                  |
+|-----------------------------------------|----------------------------------------------------------------------------------------------|
+| `Mode`                                  | `Custom` uses `CustomValue`; `Themed` resolves `DefinitionGuid` through the active database. |
+| `CustomValue`                           | The direct value used in `Custom` mode.                                                      |
+| `DefinitionGuid`                        | The `float` definition GUID resolved in `Themed` mode.                                       |
+| `TryGetValue(out float value)`          | Resolves the effective value; returns `false` when a themed value can not be resolved.       |
+| `GetValueOrDefault(float fallback = 0)` | Resolves the effective value, or `fallback` when a themed value can not be resolved.         |
 
 Used by:
 
@@ -232,21 +232,23 @@ For the inspector workflow - value selection, single-value auto-default, modifie
 
 Namespace: `derHugo.Themes`
 
-| Type                         | Target       | Notes                                                                                                                                                                                     |
-|------------------------------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `BindColorToGraphic`         | `Graphic`    | Supports smooth fade using `FadeDuration`.                                                                                                                                                |
-| `BindColorToTMPText`         | `TMP_Text`   | Drives `TMP_Text.color` directly, so it also colors the 3D `TextMeshPro` (which `BindColorToGraphic` cannot reach). Supports smooth fade using `FadeDuration`.                            |
-| `BindColorToRenderer`        | `Renderer`   | Tints any renderer via a `MaterialPropertyBlock` (`_BaseColor`/`_Color`/`_TintColor`), so no material instance is created. Also drives `LineRenderer`/`TrailRenderer` start/end colors. Works under URP where vertex colors are ignored. Supports smooth fade using `FadeDuration`. |
-| `BindColorBlockToSelectable` | `Selectable` | Applies a themed `ColorBlock` to `Selectable.colors` (Unity's built-in color-tint transition). Best on selectables that keep Unity's `ColorTint` transition rather than per-state color bindings. |
-| `BindMaterialToRenderer`     | `Renderer`   | Switches the renderer's primary (slot 0) material to the themed **shared** asset - never instances, so it is safe in edit mode and leaks nothing. With `FadeDuration` at runtime it blends shader properties via `Material.Lerp` (only when both materials share a shader; otherwise it switches instantly). Other sub-material slots are left untouched. |
-| `BindMaterialToGraphic`      | `Graphic`    | UI counterpart to `BindMaterialToRenderer`: switches (or blends via `Material.Lerp`) `Graphic.material` to the themed **shared** asset. A `Graphic` never instances its material, so nothing leaks. |
-| `BindSpriteToImage`          | `Image`      | Applies sprites by selectable state.                                                                                                                                                      |
-| `BindSpriteToSpriteRenderer` | `SpriteRenderer` | 2D world-space counterpart to `BindSpriteToImage`.                                                                                                                                  |
-| `BindStringToTextMeshPro`    | `TMP_Text`   | Applies text strings.                                                                                                                                                                     |
-| `BindFontAssetToTMPText`     | `TMP_Text`   | Swaps the `TMP_FontAsset` (shared asset reference, no instancing). Works for `TextMeshProUGUI` and 3D `TextMeshPro`.                                                                      |
-| `BindBoolToGameObjectActive` | `GameObject` | Toggles active state.<br/>**NOTE:** Since the subscription is cancelled on disabling the component it is recommended to drive this from the button not to the target `GameObject` itself. |
-| `BindDepthToTransform`       | `Transform`  | Applies local `z` value with optional smoothing.                                                                                                                                          |
-| `BindFloatToCanvasGroupAlpha`| `CanvasGroup`| Applies a `[0,1]`-clamped `float` to `CanvasGroup.alpha` (fade whole UI groups by state). Supports smooth fade using `FadeDuration`.                                                     |
+| Type                          | Target           | Notes                                                                                                                                                                                                                                                                                                                                                     |
+|-------------------------------|------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `BindColorToGraphic`          | `Graphic`        | Supports smooth fade using `FadeDuration`.                                                                                                                                                                                                                                                                                                                |
+| `BindColorToTMPText`          | `TMP_Text`       | Drives `TMP_Text.color` directly, so it also colors the 3D `TextMeshPro` (which `BindColorToGraphic` cannot reach). Supports smooth fade using `FadeDuration`.                                                                                                                                                                                            |
+| `BindColorToRenderer`         | `Renderer`       | Tints any renderer via a `MaterialPropertyBlock` (`_BaseColor`/`_Color`/`_TintColor`), so no material instance is created. Also drives `LineRenderer`/`TrailRenderer` start/end colors. Works under URP where vertex colors are ignored. Supports smooth fade using `FadeDuration`.                                                                       |
+| `BindColorBlockToSelectable`  | `Selectable`     | Applies a themed `ColorBlock` to `Selectable.colors` (Unity's built-in color-tint transition). Best on selectables that keep Unity's `ColorTint` transition rather than per-state color bindings.                                                                                                                                                         |
+| `BindMaterialToRenderer`      | `Renderer`       | Switches the renderer's primary (slot 0) material to the themed **shared** asset - never instances, so it is safe in edit mode and leaks nothing. With `FadeDuration` at runtime it blends shader properties via `Material.Lerp` (only when both materials share a shader; otherwise it switches instantly). Other sub-material slots are left untouched. |
+| `BindMaterialToGraphic`       | `Graphic`        | UI counterpart to `BindMaterialToRenderer`: switches (or blends via `Material.Lerp`) `Graphic.material` to the themed **shared** asset. A `Graphic` never instances its material, so nothing leaks.                                                                                                                                                       |
+| `BindSpriteToImage`           | `Image`          | Applies sprites by selectable state.                                                                                                                                                                                                                                                                                                                      |
+| `BindSpriteToSpriteRenderer`  | `SpriteRenderer` | 2D world-space counterpart to `BindSpriteToImage`.                                                                                                                                                                                                                                                                                                        |
+| `BindStringToTextMeshPro`     | `TMP_Text`       | Applies text strings.                                                                                                                                                                                                                                                                                                                                     |
+| `BindFontAssetToTMPText`      | `TMP_Text`       | Swaps the `TMP_FontAsset` (shared asset reference, no instancing). Works for `TextMeshProUGUI` and 3D `TextMeshPro`.                                                                                                                                                                                                                                      |
+| `BindFloatToTMPTextFontSize`  | `TMP_Text`       | Applies font size.                                                                                                                                                                                                                                                                                                                                        | 
+| `BindBoolToGameObjectActive`  | `GameObject`     | Toggles active state.<br/>**NOTE:** Since the subscription is cancelled on disabling the component it is recommended to drive this from the button not to the target `GameObject` itself.                                                                                                                                                                 |
+| `BindDepthToTransform`        | `Transform`      | Applies local `z` value with optional smoothing.                                                                                                                                                                                                                                                                                                          |
+| `BindFloatToCanvasGroupAlpha` | `CanvasGroup`    | Applies a `[0,1]`-clamped `float` to `CanvasGroup.alpha` (fade whole UI groups by state). Supports smooth fade using `FadeDuration`.                                                                                                                                                                                                                      |
+
 
 ## Bindable Components
 
@@ -351,6 +353,24 @@ public sealed class ColorHexJsonConverter : ThemeValueJsonConverter<Color>
 
 A registered converter is authoritative for its type: return `false` with a **message** from `TryReadValue` when the JSON is malformed (the message is surfaced to the import-review UI). You never handle nesting or object references yourself — write a nested themed value with `serializer.Serialize(writer, nested)` (it re-enters the same converter set) and write a `UnityEngine.Object` reference the same way (the engine encodes it into the object side-list, or an asset path for portable import/export). Value types **without** a converter fall back to Unity-like field serialization (public and `[SerializeField]` fields, matching `JsonUtility`'s rules), so most plain `[Serializable]` types need no converter at all. See the package converters under `Runtime/Json/BuiltIn Converters`.
 
+The package ships built-in `ThemeValueJsonConverter<T>` implementations for common Unity value types under:
+
+- `Packages/com.derhugo.themes/Runtime/Json/BuiltIn Converters`
+
+These give readable, stable JSON instead of Unity's default field names, and — like any converter — apply recursively when the type is nested inside another value:
+
+- `ColorThemeValueJsonConverter`: exports a `#RRGGBBAA` HEX string.
+- `Vector2/Vector3/Vector4ThemeValueJsonConverter` (and the `*Int` variants): export `{x, y, …}`.
+- `QuaternionThemeValueJsonConverter`: exports its Euler angles `{x, y, z}`.
+- `RectThemeValueJsonConverter`: exports `x`, `y`, `width`, and `height`.
+- `BoundsThemeValueJsonConverter`: exports `center` and `extend`.
+- `BoundsIntThemeValueJsonConverter`: exports `position` and `size`.
+- `LayerMaskThemeValueJsonConverter`: exports only `bits`.
+- `GradientThemeValueJsonConverter`: exports `mode`, `colorSpace`, `colorKeys`, and `alphaKeys`.
+- `ColorBlockThemeValueJsonConverter`: exports its five HEX colors plus `colorMultiplier` and `fadeDuration`.
+
+Use these files as copy/adapt references when you need a hand-authored JSON shape for a value type.
+
 ## Rename Safety
 
 The theme value model is designed so renaming, moving, or removing a type keeps every reference working and preserves the stored data:
@@ -444,7 +464,6 @@ Namespace: `derHugo.Themes.Localization`
 
 When `com.unity.localization` is installed, these become available:
 
-- `ThemeValue<LocalizedString>` - used directly (no subclass needed)
 - `BindLocalizedStringToTextMeshPro : Bind<LocalizedString, TMP_Text>`
 
 More details: [Localization](Localization.md)

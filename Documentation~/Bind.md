@@ -66,7 +66,7 @@ Setting the **Normal** value first seeds the other states with the same value; a
 Each state row is a themed value selector:
 
 - **Definition dropdown** - lists the database definitions of the field's value type; pick one to store its GUID. The selection is shown by name, with a preview where available (a color dot, a sprite/texture thumbnail, or a value preview/tooltip).
-- **Auto-selection** - when the database contains exactly **one** definition of that type, a fresh field selects it automatically instead of `<None>`.
+- **Auto-selection** - a fresh field defaults to a value instead of `<None>` when the database can pick one for its type: the type's [favorite (default) value](ThemeDatabase.md#favorite-default-value-per-type) if one is set, otherwise the lone value when exactly **one** definition of that type exists.
 - **Database shortcut** - the button next to the dropdown opens the active [`ThemeDatabase`](ThemeDatabase.md) for editing.
 
 The value type is fixed by the binding (`TValue`), so the selector always knows what to offer.
