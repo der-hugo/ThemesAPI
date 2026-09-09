@@ -19,7 +19,7 @@ Package entry point: [README](../README.md)
 
 - `com.unity.localization` installed in the project
 
-The localization assembly uses a version define and is enabled automatically when the package is present.
+The localization binding uses version defines and is enabled automatically when Localization, uGUI and TextMeshPro are present. TextMeshPro is bundled with uGUI 2.0.0+, or installed separately for older uGUI versions.
 
 ## Available Types
 

@@ -1,3 +1,9 @@
+### 1.2.0
+
+- Introduces new string based Alias system
+- Adds backward support for Unity 2022.3 LTS
+- Improved Sample
+
 ### 1.1.1
 
 - Adds `BindFloatToTMPTextFontSize` as built-in bind

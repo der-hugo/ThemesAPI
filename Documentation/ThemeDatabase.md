@@ -30,8 +30,9 @@ This page documents the [`ThemeDatabase`](ScriptingAPI.md#themedatabase-runtime-
 - `ConstantValues`: implementations for definitions marked constant
 - `Themes`: named theme entries with per-theme values for non-constant definitions
 - `ActiveThemeGuid`: active theme identifier
+- `Aliases`: stable keys that map to definitions, so a [`ThemeValue<T>`](ScriptingAPI.md#themevalue-and-value-types) can reference a value by name instead of GUID (see [Aliases](Aliases.md))
 
-Runtime references ([`ThemeValue<T>`](ScriptingAPI.md#themevalue-and-value-types)) point to definitions by GUID.
+Runtime references ([`ThemeValue<T>`](ScriptingAPI.md#themevalue-and-value-types)) point to definitions by GUID, or by an [alias](Aliases.md) key.
 
 ## Active Database Lifecycle
 
@@ -91,6 +92,7 @@ Main sections:
 1. **Active Theme** popup
 2. **Constant Values** list
 3. **Themes** list with nested per-theme value rows
+4. **Aliases** section - reference values by a stable key; scan where keys are used, register missing keys, and map or unmap aliases (see [Aliases](Aliases.md))
 
 If the inspected database is not active, the inspector shows:
 

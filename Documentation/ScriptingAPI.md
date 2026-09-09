@@ -58,6 +58,7 @@ Theme switching (instance methods on the active database; each returns `bool`):
 Value access:
 
 - `TryGetValue<T>(string definitionGuid, out T value)` - resolves a definition through the active theme; returns `false` when it can not be resolved.
+- `TryGetValueByKey<T>(string key, out T value)` - resolves an [alias](Aliases.md) key to its target definition, then through the active theme; returns `false` when the alias is missing, unmapped, or resolves to an incompatible type.
 
 Example:
 
@@ -110,11 +111,13 @@ Namespace: `derHugo.Themes`
 Serialized data:
 
 - `DefinitionGuid` - the selected value definition, stored as plain data (survives any type rename/move).
+- `Key` - an optional [alias](Aliases.md) key; when set it takes precedence over `DefinitionGuid` and resolves the value by name instead of GUID (so a pre-configured binding can resolve against a consuming project's database).
 - an optional [`ThemeValueModifier<T>`](#value-modifiers), stored by a rename-tolerant type identifier plus a JSON config blob.
 
 Key behavior:
 
-- `TryGetValue(out T value)` resolves the GUID through the active database, then applies the local modifier when one is set. A missing/unresolved modifier degrades to the raw value - the theme link is never lost.
+- `TryGetValue(out T value)` resolves the reference through the active database, then applies the local modifier when one is set. A missing/unresolved modifier degrades to the raw value - the theme link is never lost.
+- When a `Key` is set, resolution goes through the database's [alias](Aliases.md) map to the target definition first; an unresolved key (no alias, unmapped, or a type mismatch) keeps the field's current value rather than clearing it.
 
 Available value types:
 
@@ -230,6 +233,8 @@ For the inspector workflow - value selection, single-value auto-default, modifie
 
 ## Built-in Bindings
 
+Bindings targeting uGUI (`Graphic`, `Image`, `Selectable`, `CanvasGroup`) require `com.unity.ugui`. TMP bindings additionally require TextMeshPro, bundled with uGUI 2.0.0+ or supplied by `com.unity.textmeshpro`. Other bindings and `Bind<TValue, TTarget>` remain available without these packages. The table below is the complete catalog; for the uGUI/TMP subset and its requirements see [uGUI - uGUI & TMP Bindings](uGUI.md#ugui--tmp-bindings).
+
 Namespace: `derHugo.Themes`
 
 | Type                          | Target           | Notes                                                                                                                                                                                                                                                                                                                                                     |
@@ -254,37 +259,23 @@ Namespace: `derHugo.Themes`
 
 Namespace: `derHugo.Themes`
 
-Bindables wrap the standard built-in selectables and expose their state via `IBindableSelectable.State`.
+A bindable selectable exposes its interaction state as an observable that bindings subscribe to. This is a **core** concept: the interfaces live in the core assembly and work without uGUI. The ready-made wrappers for standard Unity UI controls (`BindableButton`, `BindableToggle`, …), their editor preview, and the conversion tool are part of the optional [uGUI integration](uGUI.md#bindable-components).
 
-Provided components:
+To drive bindings from your own (non-uGUI) component, implement `IBindableSelectable`: expose a `ReadOnlyObservableWithState<IBindableSelectable.StateInfo>` backed by an `ObservableWithState<IBindableSelectable.StateInfo>` and publish updates using `SetValue(new IBindableSelectable.StateInfo(state, instant))`. Implement `IBindableToggle` with an `isOn` property for on/off value blocks; the binding inspector recognizes this interface, not just the built-in `BindableToggle`.
 
-- `BindableButton`
-- `BindableToggle`
-- `BindableSlider`
-- `BindableScrollbar`
-- `BindableDropdown` (*)
-- `BindableInputField`
-- `BindableTMPDropdown` (*)
-- `BindableTMPInputField`
+`BindableSelectable.BindableSelectionState` is framework-independent and retains its serialized values: Normal = 0, Highlighted = 1, Pressed = 2, Selected = 3, Disabled = 4. Do not inherit from the compatibility bridge `BindableSelectable` itself.
 
-*&ast;: experimental - The Unity built-in states are behaving a bit weird for these*
+Editor preview is optional for custom implementations: `UseEditorPreviewState` and `EditorPreviewState` have no-op defaults. Override both properties under `#if UNITY_EDITOR` if your custom inspector supports preview simulation.
 
-Editor notes:
-
-- Bindables force `transition = None` because themed bindings handle visual transitions.
-- Bindable inspectors include an **Editor Preview State** debug control (edit mode only); `BindableScrollbar` uses the default inspector and does not show it.
-- `BindableToggle` additionally exposes `onValueChangedInverted`.
-- Each built-in selectable has a `Replace By Bindable{Type}` component context-menu entry (for example `Replace By BindableButton`) that runs the reference-safe conversion for that single component.
-
-Besides that these components map directly to the standard Unity UI components. Use the editor tool to [Convert UI Components](GettingStarted.md#convert-ui-to-bindables)
+For the ready-made uGUI wrappers and how to convert existing selectables to them, see [uGUI - Bindable Components](uGUI.md#bindable-components).
 
 ## Theme Switching Helpers
 
 Namespace: `derHugo.Themes`
 
 - `ThemeSelector`: serializable GUID wrapper with `TryApply()`.
-- `ThemeSetter`: applies a selected theme on enable (gated by `Execute In Edit Mode` / `Apply On Enabled`) or by explicit `Apply()` call.
-- `ThemeDropdown`: binds a `TMP_Dropdown` to available themes and active theme selection.
+- `ThemeSetter`: Uses an exposed `ThemeSelector` and applies the selected theme on enable (gated by `Execute In Edit Mode` / `Apply On Enabled`) or by explicit `Apply()` call.
+- `ThemeDropdown`: binds a `TMP_Dropdown` to available themes and active theme selection. Requires the optional [uGUI integration](uGUI.md#theme-switching-themedropdown) (uGUI + TextMeshPro)
 
 ![ThemeSetter inspector](images/sample/ThemeSetter.png)
 
@@ -355,7 +346,7 @@ A registered converter is authoritative for its type: return `false` with a **me
 
 The package ships built-in `ThemeValueJsonConverter<T>` implementations for common Unity value types under:
 
-- `Packages/com.derhugo.themes/Runtime/Json/BuiltIn Converters`
+- `Assets/derHugo/Themes/Runtime/Json/BuiltIn Converters`
 
 These give readable, stable JSON instead of Unity's default field names, and — like any converter — apply recursively when the type is nested inside another value:
 
