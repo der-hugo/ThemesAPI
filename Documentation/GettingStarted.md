@@ -77,35 +77,14 @@ More details: [ThemeDatabase - Theme Workflow](ThemeDatabase.md#theme-workflow)
 
 ## Convert UI to Bindables
 
-There are two ways to convert existing UI controls into their bindable variants. Both route through the same utility, which first scans the whole project (prefabs, ScriptableObjects and scenes) and rewires every existing reference to the replaced components, so **conversion never breaks existing references**.
+*Requires the optional [uGUI integration](uGUI.md).*
 
-### Replace a whole selection
+To make uGUI selectables drive themed bindings, replace them with their bindable variants. A reference-safe utility scans the whole project (prefabs, ScriptableObjects and scenes) and rewires every existing reference, so **conversion never breaks existing references**. Two entry points:
 
-Run the replacement utility on the selected roots. It converts every supported selectable found on the selected GameObjects and their children:
+- **A whole selection**: `Tools > derHugo > Themes > Replace Selectables With Bindables (Selection)` (also on the `GameObject` menu) converts every supported selectable on the selected GameObjects and their children.
+- **A single component**: each supported selectable has a `Replace By Bindable{Type}` entry in its component context menu (for example `Replace By BindableButton`).
 
-- `Tools > derHugo > Themes > Replace Selectables With Bindables (Selection)`
-- or `GameObject > derHugo > Themes > Replace Selectables With Bindables (Selection)`
-
-### Replace a single component (context menu)
-
-Each supported built-in selectable also gets a dedicated entry in its component context menu (the `⋮` menu in the top-right of the component header, or right-click the component header). For example, a `Button` shows **Replace By BindableButton**:
-
-- Right-click the component header (or open its `⋮` menu) and choose the `Replace By Bindable{Type}` entry.
-- The entry only appears on the original Unity components; on components that are already bindable it is disabled.
-- Selecting the entry on several objects at once batches them into a single conversion pass.
-
-Supported replacements:
-
-- `Button` -> `BindableButton`
-- `Toggle` -> `BindableToggle`
-- `Slider` -> `BindableSlider`
-- `Scrollbar` -> `BindableScrollbar`
-- `Dropdown` -> `BindableDropdown`
-- `InputField` -> `BindableInputField`
-- `TMP_Dropdown` -> `BindableTMPDropdown`
-- `TMP_InputField` -> `BindableTMPInputField`
-
-More details: [Scripting API - Bindable Components](ScriptingAPI.md#bindable-components)
+For the full list of supported replacements and the bindable components themselves, see [uGUI - Convert UI to Bindables](uGUI.md#convert-ui-to-bindables).
 
 ## Add Theme Bindings
 
@@ -152,11 +131,13 @@ More details:
 
 - Enter Play Mode and switch themes.
 - Inspect bound controls for all selectable states.
+- If you reference values by key, open the database's [Aliases](Aliases.md) section and **Rescan Usages** to catch any missing or unmapped keys (a pre-build check also warns about them).
 - Export a full database JSON snapshot or individual theme JSON before large edits.
 - Check [JSON Serialization Limitations](ThemeDatabase.md#json-serialization-limitations) before relying on JSON import/export for custom value types.
 
 Related pages:
 
 - [ThemeDatabase](ThemeDatabase.md)
+- [Aliases](Aliases.md)
 - [Project Settings](ProjectSettings.md)
 - [Sample](Sample.md)

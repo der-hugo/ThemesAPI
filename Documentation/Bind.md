@@ -23,9 +23,9 @@ This page documents the binding components and their inspector: how a themed val
 
 ## Overview
 
-A binding is a `Bind<TValue, TTarget>` component: it resolves a themed `TValue` from the active [`ThemeDatabase`](ThemeDatabase.md) and applies it to a `TTarget` (a component or GameObject). Use a [built-in binding](ScriptingAPI.md#built-in-bindings) (for example `BindColorToGraphic`, `BindSpriteToImage`, `BindStringToTextMeshPro`) or a [custom binding](ScriptingAPI.md#custom-binding-examples).
+A binding is a `Bind<TValue, TTarget>` component: it resolves a themed `TValue` from the active [`ThemeDatabase`](ThemeDatabase.md) and applies it to a `TTarget` (a component or GameObject). You can use the [built-in bindings](ScriptingAPI.md#built-in-bindings) (for example `BindColorToGraphic`, `BindSpriteToImage`, `BindStringToTextMeshPro`) or create your own [custom bindings](ScriptingAPI.md#custom-binding-examples).
 
-The values a binding stores are plain, rename-safe [`ThemeValue<T>`](ScriptingAPI.md#themevalue-and-value-types) references - each holds the selected definition GUID and an optional local modifier.
+The values a binding stores are [`ThemeValue<T>`](ScriptingAPI.md#themevalue-and-value-types) references - each holds the selected definition GUID (or an [alias](Aliases.md) key) and an optional local modifier.
 
 [![][1]][1]
 
@@ -35,7 +35,7 @@ The **Type** dropdown (shown when the binding is driven by a bindable selectable
 
 - **Static** - always applies the single value, ignoring selectable state.
 - **Selectable** - applies the value for the current selectable state (see [Selectable States](#selectable-states)).
-- **Toggle** - like `Selectable`, but when the driving [`BindableToggle`](ScriptingAPI.md#bindable-components) is **off** it uses the separate `Off Values` block. Only available when the source is a toggle.
+- **Toggle** - like `Selectable`, but when the driving [`BindableToggle`](uGUI.md#bindable-components) is **off** it uses the separate `Off Values` block. Only available when the source is a toggle.
 
 [![][8]][8]
 
@@ -66,6 +66,7 @@ Setting the **Normal** value first seeds the other states with the same value; a
 Each state row is a themed value selector:
 
 - **Definition dropdown** - lists the database definitions of the field's value type; pick one to store its GUID. The selection is shown by name, with a preview where available (a color dot, a sprite/texture thumbnail, or a value preview/tooltip).
+- **Aliases** - the same dropdown also lists compatible [aliases](Aliases.md); pick one to reference the value by a stable **key** instead of a GUID, or type a name and choose **`Create alias "…"`** to make one on the spot. Keys let a binding shipped in a package or prefab resolve against a consuming project's own database.
 - **Auto-selection** - a fresh field defaults to a value instead of `<None>` when the database can pick one for its type: the type's [favorite (default) value](ThemeDatabase.md#favorite-default-value-per-type) if one is set, otherwise the lone value when exactly **one** definition of that type exists.
 - **Database shortcut** - the button next to the dropdown opens the active [`ThemeDatabase`](ThemeDatabase.md) for editing.
 
