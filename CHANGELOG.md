@@ -1,3 +1,10 @@
+### 1.2.1
+
+- Includes all ThemeValue usages in issues scan
+- Adds pre-build scan for assignment issues
+- Improves ThemeDatabase Inspector
+- Fixes scene dirty marking for selectables that are non-interactible 
+
 ### 1.2.0
 
 - Introduces new string based Alias system

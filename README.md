@@ -46,13 +46,13 @@ The included [Sample](Documentation/Sample.md) has additional dependencies, inst
 
 ### Active ThemeDatabase
 
-The package works with exactly one active [`ThemeDatabase`](Documentation/ScriptingAPI.md#themedatabase-runtime-api) per project session.
+The package uses a cebtral active [`ThemeDatabase`](Documentation/ScriptingAPI.md#themedatabase-runtime-api), selected in the Themes project settings.
 
-When no database exists, the editor creates a default one at:
+Assign an existing database using the object field in the Themes window or Project Settings. When it is empty, **Create New...** opens a save dialog and activates the asset you create.
 
-    Assets/Resources/ThemeDatabase.asset
+Without an active database, bindings preserve their current values and stored references. Consumer inspectors show an error with a shortcut to the Themes configuration window.
 
-`Resources` is only the default creation location, not a requirement. The active database is resolved through `PlayerSettings` preloaded assets, not `Resources.Load`, so it does not need to stay in a `Resources` folder (where it would otherwise be force-included in every build).
+The build preprocessor adds the selected database to `PlayerSettings` preloaded assets for the build, then restores the original list. The asset can live anywhere in the project.
 
 ### Value Definitions and GUID Binding
 

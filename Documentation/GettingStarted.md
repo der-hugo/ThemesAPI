@@ -30,11 +30,9 @@ Set it active in one of these places:
 - `Window > derHugo > Themes`
 - `Edit > Project Settings > derHugo > Themes`
 
-If no database exists, the package will auto-create one at:
+Alternatively, when the **Project-wide Database** object field is empty in the Themes window or Project Settings, click **Create New...** and choose where to save the asset. It becomes active after creation. Canceling the dialog leaves the selection empty.
 
-- `Assets/Resources/ThemeDatabase.asset`
-
-You can freely move it somewhere else; the active-database link is tracked through preloaded assets, not its location.
+The selection is stored in Themes project settings and added to preloaded assets during builds.
 
 More details: [ThemeDatabase - Active Database Lifecycle](ThemeDatabase.md#active-database-lifecycle)
 

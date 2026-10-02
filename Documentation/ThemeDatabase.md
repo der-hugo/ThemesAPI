@@ -38,21 +38,15 @@ Runtime references ([`ThemeValue<T>`](ScriptingAPI.md#themevalue-and-value-types
 
 ### Single active database
 
-Only one database should be active project-wide.
+Themes uses a single central active `ThemeDatabase`. The selection is stored in Themes project settings. During a build, the build preprocessor adds the selected asset to `PlayerSettings` preloaded assets.
 
-The active database is selected through the editor tooling and synced to `PlayerSettings` preloaded assets so runtime can resolve the same asset.
+### Creating or selecting a database
 
-### Automatic creation
+Use the object field in the Themes window or Project Settings to assign an existing database. If the field is empty, **Create New...** opens a save dialog and activates the newly created asset.
 
-If no database exists, the editor can create:
+### No active database
 
-- `Assets/Resources/ThemeDatabase.asset`
-
-`Resources` is only the default creation location. The active database is resolved through the `PlayerSettings` preloaded assets, so you can move the asset out of `Resources` to any folder or package without breaking the active-database link. See [Getting Started - Create or Select the Active Database](GettingStarted.md#create-or-select-the-active-database).
-
-### Multiple database handling
-
-If multiple databases exist and no clear active selection is available, the editor prompts you to choose one.
+An empty selection is valid. Clearing the field or deleting the active database leaves theming inactive. Bindings preserve the last applied target values and stored references until a database is assigned.
 
 ### Switch confirmation
 
