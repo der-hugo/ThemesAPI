@@ -1,3 +1,8 @@
+### 1.2.2
+
+- Prevents BindBoolToGameObjectActivate from self deactivation and getting stuck in inactive state 
+- Fixes create value name in ThemeValue drawer
+
 ### 1.2.1
 
 - Includes all ThemeValue usages in issues scan

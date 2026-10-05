@@ -105,6 +105,8 @@ A [`ThemeValueModifier<T>`](ScriptingAPI.md#value-modifiers) can post-process th
 
 Leave auto-discovery enabled for the common case where the binding sits beside the target component, for example a `BindColorToGraphic` on the same GameObject as an `Image`. Disable it when one binding should drive a specific child, a sibling component, or a renderer that cannot be found reliably from the binding's GameObject.
 
+`BindBoolToGameObjectActive` requires a manually assigned child or deeper descendant. Its own GameObject, parents, siblings, and unrelated objects are not allowed. Keep the binding's host active so it can enable an initially inactive target. The Inspector clears invalid assignments, including during multi-object editing, and the binding checks the hierarchy again before changing active state.
+
 [![][6]][6]
 
 ## With Animation (Fade Duration)
