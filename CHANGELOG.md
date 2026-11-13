@@ -1,3 +1,12 @@
+### 1.2.3
+
+- Fixes bugs in type picker search
+  - now includes types from `System`
+  - filters out non-serializable types
+- Includes ThemedFloat usages in issues scan
+- Reveals usages of values in ThemeDatabase inspector
+- Fixes handling of missing UnityEngine.Object references in readonly database
+
 ### 1.2.2
 
 - Prevents BindBoolToGameObjectActivate from self deactivation and getting stuck in inactive state 

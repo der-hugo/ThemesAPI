@@ -39,6 +39,7 @@ The included [Sample](Documentation/Sample.md) has additional dependencies, inst
 - [Built-in bindings](Documentation/ScriptingAPI.md#built-in-bindings) for common UI targets, with extension points for arbitrary custom targets.
 - Full selectable-state hook for fan-out binding: one selectable can drive any number of bindings and update multiple graphics/components per state.
 - Inspector dropdown previews for theme values, including color dots, sprite/texture thumbnails, and value previews/tooltips for generic entries.
+- [Value and alias usage views](Documentation/ThemeDatabase.md#value-usages): easily find where a value or alias is being referenced
 - [Aliases](Documentation/Aliases.md): reference a value by a stable **key** instead of a GUID, so bindings shipped in packages or prefabs resolve against any project's database - with usage scanning, missing/unmapped detection, and a pre-build check.
 - Editor JSON import/export for full database snapshots and Runtime side loading of individual themes.
 
@@ -75,6 +76,8 @@ Definitions can be converted both ways directly in the inspector.
 
 [Aliases](Documentation/Aliases.md) map a stable **key** to a value definition, so a [`ThemeValue<T>`](Documentation/ScriptingAPI.md#themevalue-and-value-types) can reference a value by name instead of its project-local GUID. This lets bindings pre-configured in a package or prefab resolve against a consuming project's own database - even before the value exists. The database's **Aliases** section scans where keys are used, flags missing or unmapped keys, and a pre-build check warns about unresolved references.
 
+Value entries and alias rows share a **search-icon usage toggle**. Click it to reveal consumer links; counts above 99 display as `99+`, and rows with no discovered usages have a disabled icon-only button. Value counts include direct references, mapped aliases, and themed floats such as fade durations and modifier factors. See [Value Usages](Documentation/ThemeDatabase.md#value-usages) for scan scope and navigation.
+
 ## Typical Workflow
 
 1. Create or select the active [`ThemeDatabase`](Documentation/ScriptingAPI.md#themedatabase-runtime-api).
@@ -87,7 +90,7 @@ Definitions can be converted both ways directly in the inspector.
 ## Documentation
 
 - [Getting Started](Documentation/GettingStarted.md): first setup pass and quick tutorial.
-- [ThemeDatabase](Documentation/ThemeDatabase.md): in-depth data model, inspector workflow, JSON format, rename safety, and serialization limitations.
+- [ThemeDatabase](Documentation/ThemeDatabase.md): in-depth data model, inspector workflow, value usage views, JSON format, rename safety, and serialization limitations.
 - [Bind Components](Documentation/Bind.md): the binding components and their inspector - value selection, modifiers, quick-add, targets, and transitions.
 - [Aliases](Documentation/Aliases.md): reference values by a stable key, usage scanning, missing/unmapped reconciliation, and the pre-build check.
 - [Project Settings](Documentation/ProjectSettings.md): project-wide activation and settings behavior.

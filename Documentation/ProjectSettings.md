@@ -74,24 +74,27 @@ More details: [ThemeDatabase - JSON Format and Import/Export](ThemeDatabase.md#j
 
 Directly under the database and JSON actions, the header hosts the shared usage-scan controls (kept here so the lists stay uncluttered):
 
-- **Rescan** (↻) - runs the usage scan once now (feeds both the Aliases list and the Issues list).
-- **Auto Scan** - project setting (`AutoScanUsages`, on by default): rebuild automatically as scenes, prefabs, bindings, or the build scene list change and after each recompile, while a list is on screen.
-- **Validate theme usages before build** (on by default) - the pre-build check below.
+- **Refresh icon** (↻) - runs the shared usage scan once now, updating [value usage counts](ThemeDatabase.md#value-usages), [alias usage counts](Aliases.md#usage-view-toggle), and Validation. The Aliases header has the same refresh action.
+- **Settings icon** - opens the shared options: **Auto Scan Usages** (`AutoScanUsages`, on by default) and **Validate Usages Before Build** (on by default).
+- **Auto Scan Usages** rebuilds automatically as scenes, prefabs, bindings, or the build scene list change and after each recompile, while the database editor or its scan results are displayed. It pauses during play mode, compilation, and test runs.
+
+Each value and alias row uses the same compact **search-icon usage toggle** to show consumer links. Counts above 99 display as `99+`; hover for the exact count. With no discovered usages, the icon-only button is disabled and its list is hidden. The row buttons do not run individual scans; use the header refresh action when the results are stale or no scan has completed.
 
 ### Validate Theme Usages Before Build
 
-The pre-build check scans every build-included asset - scenes, prefabs, ScriptableObjects, and preloaded assets - for [`ThemeValue`](ScriptingAPI.md) references that will not resolve against the active database:
+The pre-build check uses the [shared scan scope](Aliases.md#usage-scanning) to find [`ThemeValue`](ScriptingAPI.md#themevalue-and-value-types) and [`ThemedFloat`](ScriptingAPI.md#themedfloat) references that will not resolve against the active database, including references inside selected modifier configurations:
 
 - **Missing / unmapped aliases** - a keyed reference whose alias does not exist, or exists but maps to nothing.
 - **Alias / value type conflicts** - a keyed or GUID reference that resolves to a definition of a type the field cannot accept.
 - **Missing value references** - a GUID reference whose definition no longer exists.
-- **Unassigned values** - a field left at "None" that is actually read at runtime. This is context-aware for bindings: a non-`Normal` selectable state inherits `Normal`, so only a used block's `Normal` (or a standalone / third-party field) is flagged.
+- **Unassigned values** - a reference left at "None" where an assignment is required. For `ThemeValue` selectable states, non-`Normal` states can inherit `Normal`; `Values.Normal` is required in every binding mode, and `OffValues.Normal` is required in Toggle mode. Standalone references are also checked.
+- **Unassigned themed floats** - `ThemedFloat` in **Themed** mode requires a float reference, including fade durations and modifier factors. An empty selection is reported even when runtime code has a fallback. **Custom** mode is ignored, including any stale stored GUID.
 
 Unresolved usages are always logged to the Console as **errors**. In an interactive build the Themes settings page opens (so you can inspect the Issues list, see below) and a dialog lets you cancel the build or build anyway; an unattended (batch/CI) build only logs and proceeds without failing (a logged error does not fail a headless build). Disable the toggle - temporarily or permanently - for projects whose value types need handling the check would otherwise flag.
 
 ### Issues list
 
-The database inspector (this page, the Themes window, and the asset inspector) shows an **Issues** list at the **top**, fed by the **same scan** as the Aliases list and classified against the active database at draw time (so it updates immediately when you fix an alias or definition - no rescan needed). It is **hidden entirely when there is nothing to show**, and carries a count badge like the Aliases list.
+The **Validation** header at the top of the active database editor (this page, the Themes window, and the asset inspector) shows issue/warning badges or an **OK / Not scanned** status. Expand it when issues are present to view the **Issues** list. The list shares the same scan as value and alias usages, and references are classified against the active database at draw time, so fixing an alias or definition does not require another asset scan. When there are no issues, the list is hidden and the status header remains visible.
 
 - **Errors** (red) come first: one entry per affected component or ScriptableObject asset, reduced to the GameObject/asset name (with the component type), combining all of that host's issues into one row. Clicking a row **pings the live instance** when its scene or prefab stage is loaded, otherwise the **containing asset**.
 - **Warnings** (yellow) follow: an **unmapped alias that no binding uses** is harmless for a build (nothing resolves against it), so it is revealed as a warning rather than an error - in both the Issues list and the Aliases badge - and it never blocks a build.

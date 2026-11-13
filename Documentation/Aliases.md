@@ -11,6 +11,7 @@ Aliases let a [`ThemeValue<T>`](ScriptingAPI.md#themevalue-and-value-types) refe
 - [Why Aliases](#why-aliases)
 - [Referencing a Value by Key](#referencing-a-value-by-key)
 - [The Aliases Section](#the-aliases-section)
+  - [Usage View Toggle](#usage-view-toggle)
   - [Usage Scanning](#usage-scanning)
   - [Missing Keys](#missing-keys)
   - [Mapping and Unmapped Aliases](#mapping-and-unmapped-aliases)
@@ -44,8 +45,13 @@ Every [`ThemeValue<T>`](ScriptingAPI.md#themevalue-and-value-types) field uses t
 Aliases are managed from the **Aliases** foldout of the [`ThemeDatabase`](ScriptingAPI.md#themedatabase-runtime-api) editor, available from every entry point ([asset inspector](ThemeDatabase.md#editor-entry-points), `Window > derHugo > Themes`, and `Edit > Project Settings > derHugo > Themes`), below **Constant Values** and **Themes**. The section header carries an **issues badge** (`N issues`) whenever there are unresolved entries.
 
 [![][1]][1]
+Each alias row lays out like a [value entry](ThemeDatabase.md#value-usages): the **key**, the **expected type**, a remap arrow, the **target-value** mapping dropdown, a **search-icon usage toggle**, and a delete (`X`) or register (`+`) button. The usage toggle occupies the same column and uses the same appearance and interaction as the value rows.
 
-Each alias row lays out like a [value entry](ThemeDatabase.md#inspector-workflow): an optional **used-by** foldout, the **key**, the **expected type**, a remap arrow, the **target-value** mapping dropdown, and a delete (`X`).
+### Usage View Toggle
+
+Click the **search icon and count** to show or hide the alias's consumer links beneath the row. Counts above 99 display as **`99+`**, with the exact count in the tooltip. When no usages are discovered, the button is disabled and shows only the icon; an open list closes automatically when its last usage disappears. The target-value dropdown chooses which definition the alias maps to independently of the usage toggle.
+
+An alias's count includes references to **that key**. The mapped [value's usage view](ThemeDatabase.md#value-usages) also includes direct references and consumers of any other aliases mapped to the same definition. Remapping an alias updates the affected value counts without another asset scan.
 
 ### Usage Scanning
 
@@ -53,9 +59,12 @@ Each alias row lays out like a [value entry](ThemeDatabase.md#inspector-workflow
 
 - the enabled **Build Settings** scenes and, when the Addressables package is installed, the **Addressable** scenes
 - every currently **open scene** and the current **prefab stage**
+- **Player Settings preloaded assets**
 - and the recursive **prefab / ScriptableObject dependency closure** of all of the above.
 
-The scan is **non-destructive** - closed scenes are opened and closed again without ever saving, so it leaves the project (and your open scenes) exactly as it found them. Expand a row's **used-by** handle to list the consumer sites; a site links to the live object when its scene or prefab is open, otherwise it pings the containing asset. The site label is condensed to the asset name, with the full path on its tooltip.
+The scan is **non-destructive** - closed scenes are opened and closed again without ever saving. Use the row's **search-icon usage toggle** to list its consumers. A link selects and pings the component when its scene or prefab stage is open; otherwise it pings the containing asset. Closed-asset labels use the asset name, while open scenes/prefabs show the object path and component. Hover over a link for the full asset path and field location.
+
+Inherited prefab bindings are reported at their source, with genuine instance overrides recorded separately. The count represents discovered referencing fields, not every runtime prefab instance. The scan also feeds [value usages](ThemeDatabase.md#value-usages) and [Validation](ProjectSettings.md#issues-list), including GUID references and themed floats; the Aliases list shows the key-based subset.
 
 ### Missing Keys
 
@@ -72,7 +81,11 @@ An **unmapped** alias - one with no target, or whose target definition was delet
 
 ### Automatic Rescan
 
-**Auto Scan** keeps the list current automatically when scenes, prefabs, bindings, or the build scene list change, and after each recompile. To stay cheap it only runs while the Aliases list is actually on screen, and it pauses during play mode, compilation, and test runs. Turn it off on very large projects and use **Rescan Usages** on demand instead.
+Open the **settings icon** in the **Aliases** or **Validation** header to configure **Auto Scan Usages** and **Validate Usages Before Build**. The **refresh icon** next to either section title runs **Rescan Usages** on demand; both headers control the same scan.
+
+**Auto Scan Usages** keeps value counts, alias counts, and validation current when scenes, prefabs, bindings, or the build scene list change, and after each recompile. It runs while the database editor or its scan results are being displayed, and pauses during play mode, compilation, and test runs. Disable it on very large projects and refresh on demand instead.
+
+Before a scan has completed, or when changes make results stale, the header warning and usage-button tooltip indicate that a refresh is needed. An icon-only disabled button means no usages were discovered in the current results; it does not establish that the alias is unused in every project asset.
 
 ## Reference States
 
@@ -89,9 +102,9 @@ When a key does not resolve, the binding simply keeps its current value - the re
 
 ## Build Validation
 
-A pre-build check scans the build closure once for keyed references whose alias is **missing** or **unmapped** and logs each one to the Console. In an interactive build it then shows a **Build anyway / Cancel** dialog, so you can fix the issues first or continue deliberately. Unattended / batch builds (CI) log the issues and proceed without prompting.
+When **Validate Usages Before Build** is enabled, a pre-build check reports missing/unmapped aliases, alias and GUID type conflicts, missing definition GUIDs, and required-but-unassigned references. This includes [`ThemedFloat`](ScriptingAPI.md#themedfloat) fields in Themed mode and references inside selected modifier configurations. Custom floats are ignored; empty selectable states that inherit Normal are not treated as missing assignments.
 
-The check only covers **alias** references (missing or unmapped keys); GUID-mode references and unassigned values are out of scope.
+Unresolved usages are logged to the Console as errors. An interactive build offers **Build anyway / Cancel build**; unattended / batch builds (CI) log the issues and proceed without prompting. See [Project Settings - Validate Theme Usages Before Build](ProjectSettings.md#validate-theme-usages-before-build) for the assignment rules and settings.
 
 ## Runtime API
 

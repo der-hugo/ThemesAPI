@@ -159,6 +159,7 @@ Editor behavior:
 
 - In `Custom` mode, the inspector edits the direct value.
 - In `Themed` mode, the inspector shows the selected `float` definition and a read-only preview of the currently resolved theme value.
+- Themed references are included in the definition's [usage view](ThemeDatabase.md#value-usages) and [usage validation](ProjectSettings.md#validate-theme-usages-before-build), including fields inside selected modifier configurations. Empty, missing, or wrong-type references are reported; runtime fallback behavior does not suppress an empty Themed selection. Custom-mode floats are not theme usages.
 
 ## Value Modifiers
 
@@ -274,10 +275,31 @@ For the ready-made uGUI wrappers and how to convert existing selectables to them
 Namespace: `derHugo.Themes`
 
 - `ThemeSelector`: serializable GUID wrapper with `TryApply()`.
+
+   ```csharp
+   [SerializeField] private ThemeSelector _theme;
+  
+   ...
+  
+   //either simply (internally does the same as below)
+   _theme.TryApply();
+  
+   // or more explicitely
+   if(ThemeDatabase.ActiveDatabse != null)
+   {
+       ThemeDatabase.ActiveDatabase.SetActiveTheme(_theme.ThemeGuid);
+   }
+   ```
+
 - `ThemeSetter`: Uses an exposed `ThemeSelector` and applies the selected theme on enable (gated by `Execute In Edit Mode` / `Apply On Enabled`) or by explicit `Apply()` call.
+
+   [![][1]][1]
+
+[1]:images/ThemeSetter.png
+
 - `ThemeDropdown`: binds a `TMP_Dropdown` to available themes and active theme selection. Requires the optional [uGUI integration](uGUI.md#theme-switching-themedropdown) (uGUI + TextMeshPro)
 
-![ThemeSetter inspector](images/sample/ThemeSetter.png)
+
 
 ## Value Previews
 
@@ -476,7 +498,7 @@ Built-in converters cover:
 - `Vector2`/`Vector3`/`Vector4` and `Vector2Int`/`Vector3Int` as `{x, y, …}`
 - `Quaternion` as Euler-angle objects, `Rect`, `Bounds`, `BoundsInt`, `LayerMask`, and `Gradient`
 
-See [Sample - JSON Converter References](Sample.md#json-converter-references) for the complete built-in converter list and their exact shapes.
+See [Custom JSON Serialization](#custom-json-serialization) for the built-in converter list and JSON field shapes.
 
 Everything else uses Unity-like field serialization (public and `[SerializeField]` fields, matching `JsonUtility`'s rules). This keeps JSON support aligned with what Unity can serialize in the Inspector.
 

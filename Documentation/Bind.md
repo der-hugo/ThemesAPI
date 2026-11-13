@@ -74,6 +74,8 @@ The value type is fixed by the binding (`TValue`), so the selector always knows 
 
 Color values expose the same selector with an inline color preview, so state rows can be scanned without opening the database. The optional modifier row below each value lets the binding locally adjust the resolved value without creating another database definition.
 
+To find every discovered consumer of the selected definition, open the database and click that value row's **search-icon usage toggle**. An alias row has the same control for consumers of its key. Usage links select the component in an open scene/prefab stage or ping the containing asset. See [Value Usages](ThemeDatabase.md#value-usages).
+
 [![][4]][4]
 
 [![][3]][3]
@@ -112,6 +114,8 @@ Leave auto-discovery enabled for the common case where the binding sits beside t
 ## With Animation (Fade Duration)
 
 Bindings whose `SetValueSmooth` provides a transition show a **Fade Duration**, a [`ThemedFloat`](ScriptingAPI.md#themedfloat): it is either a direct value or a themed `float` resolved from the active theme. The resolved duration is clamped to be non-negative; a duration of `0` (or a binding without smooth support) applies instantly.
+
+In **Themed** mode, the fade-duration field is included in the selected float definition's [usage view](ThemeDatabase.md#value-usages) and in [usage validation](ProjectSettings.md#validate-theme-usages-before-build). An empty, missing, or incompatible selection is reported as an issue. Use **Custom** mode with `0` for an intentional instant transition without a theme reference. The same tracking applies to themed float factors inside selected value modifiers; Custom floats are ignored.
 
 [![][7]][7]
 

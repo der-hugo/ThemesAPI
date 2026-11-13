@@ -13,6 +13,7 @@ This page documents the [`ThemeDatabase`](ScriptingAPI.md#themedatabase-runtime-
 - [Editor Entry Points](#editor-entry-points)
 - [Inspector Workflow](#inspector-workflow)
 - [Value Definition Workflow](#value-definition-workflow)
+- [Value Usages](#value-usages)
 - [Favorite (Default) Value per Type](#favorite-default-value-per-type)
 - [Constant and Theme-Specific Conversion](#constant-and-theme-specific-conversion)
 - [Theme Workflow](#theme-workflow)
@@ -105,6 +106,7 @@ The editor window is optimized for two common tasks:
 - Use **Constant Values** to maintain shared design tokens that do not vary between themes, such as numeric spacing, fixed durations, asset references, or a default sprite.
 - Use **Themes** to compare and edit every theme-specific implementation of the same definition, such as light/dark colors, theme names, localized labels, state colors, and layout values that should change with the active theme.
 - Use **Active Theme** while authoring a scene to preview the result immediately in bound components.
+- Use the **search-icon usage toggle** on a value or alias row to find and select its consumers without leaving the database editor.
 - Use **Export JSON** when handing a database to another project, reviewing a theme in version control, or backing up a known-good set of definitions before a larger edit.
 
 ## Value Definition Workflow
@@ -139,6 +141,32 @@ The value type controls which bindings can consume the definition:
 - Object references are useful for shared assets, but should point to project or package assets when JSON portability matters. This is an editor feature and will not work for side loading on runtime!
 
 Name definitions by intent rather than by one theme's implementation. For example, prefer `Primary Color`, `Dialog Background`, or `Button Fade Duration` over `Blue`, `Dark Gray`, or `0.2`. Bindings store the definition GUID, so the display name can be refined later without losing references.
+
+## Value Usages
+
+Every constant and theme-specific value row has a compact **search-icon usage toggle**, aligned with the same control in the [Aliases section](Aliases.md#usage-view-toggle). It sits immediately before the delete button; it is separate from the value field's own foldout for larger types.
+
+[![][4]][4]
+
+- **Icon and count** - the number is the count of discovered referencing fields. Counts above 99 display as **`99+`**; hover over the button for the exact count.
+- **Show or hide consumers** - click the toggle to reveal usage links beneath the entry, then click it again to close the list. Opening or closing usages does not change the value field's foldout.
+- **No discovered usages** - the button is disabled and shows only the search icon. The list is hidden automatically, including when its last usage disappears after a refresh.
+
+The count belongs to the **definition**, not an individual theme's stored value, so the same definition shows the same count in each theme. Value usages include direct GUID references and references through aliases mapped to that definition in the inspected database. An alias consumer carries a **`via "key"`** suffix; an alias row's own count includes only references to that key.
+
+[![][5]][5]
+
+Click a usage link to select and ping its component when the containing scene or prefab stage is open. Otherwise, the link pings the containing asset. Hover over a link for its asset path and field location. Inherited prefab bindings are reported at their source; genuine instance overrides are reported separately. Counts describe discovered binding fields, not the number of runtime objects that may use a prefab.
+
+### Scan coverage and freshness
+
+Usage counts share the [usage scan](Aliases.md#usage-scanning) used by aliases and validation. It covers open scenes and the prefab stage, enabled Build Settings scenes, Addressable scenes when available, preloaded assets, and their prefab/ScriptableObject dependencies. It does not search every asset in the project or detect references constructed dynamically in code.
+
+The scan also tracks [`ThemedFloat`](ScriptingAPI.md#themedfloat) fields in **Themed** mode, including binding fade durations and floats inside selected modifier configurations. **Custom** mode does not create a theme reference, even if an older definition GUID remains stored in the field.
+
+Use the **refresh icon** in the **Validation** or **Aliases** header to scan on demand. The settings icon in either header opens **Auto Scan Usages** and **Validate Usages Before Build**. Before the first scan, or when the results are out of date, the header warning and usage-button tooltip explain that a refresh is needed. A disabled usage button alone is not proof that a value is unused throughout the project.
+
+Missing, incompatible, and required-but-unassigned references appear in [Validation](ProjectSettings.md#issues-list). An unassigned reference cannot contribute to a particular value's count, so use Validation to find those fields.
 
 ## Favorite (Default) Value per Type
 
@@ -291,7 +319,7 @@ Conversion order (keyed by value type):
 2. `UnityEngine.Object` values use editor asset paths (sub-assets as `path#ObjectName`) via the object side-list.
 3. Remaining values use Unity-like field serialization (matching `JsonUtility`'s rules).
 
-Built-in converter shapes (examples - see [Sample - JSON Converter References](Sample.md#json-converter-references) for the full list):
+Built-in converter shapes (examples - see [Scripting API - Custom JSON Serialization](ScriptingAPI.md#custom-json-serialization) for the converter list):
 
 - `Color` as HEX strings (`#RRGGBBAA`).
 - `ColorBlock` as `normalColor`, `highlightedColor`, `pressedColor`, `selectedColor`, and `disabledColor` HEX strings plus `colorMultiplier` and `fadeDuration`.
@@ -326,3 +354,5 @@ Related pages:
 [1]: images/ThemeDatabase_Full.png
 [2]: images/ThemeDatabase_ValueTypes_Full.png
 [3]: images/JSON_Serialization_Full.png
+[4]: images/Value_Usages.png
+[5]: images/Value_Uasges_Via_Alias.png
